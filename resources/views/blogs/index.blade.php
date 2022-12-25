@@ -12,8 +12,8 @@
                         <thead>
                         <tr>
                             <th>ID#</th>
-                            <th>Title</th>
-                        </tr>
+                            <th>Body</th>
+                            </tr>
                         </thead>
 
                         <tbody>
@@ -21,7 +21,7 @@
                             <tr>
                                 <td>{{$blog->id}}</td>
                                 <td><a href="{{Route('blog.show', $blog['id'])}}"
-                                       style="text-decoration: none">{{$blog->blog_title}}</a></td>
+                                       style="text-decoration: none">{{$blog->blog_content}}</a></td>
                             </tr>
                         @endforeach
                         </tbody>

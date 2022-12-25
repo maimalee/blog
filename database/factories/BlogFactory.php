@@ -19,7 +19,6 @@ class BlogFactory extends Factory
         return [
             'user_id' => mt_rand(1, 10),
             'blog_content' => implode(',', $this->faker->sentences(5)),
-            'blog_title' => fake()->sentence(),
-        ];
+               ];
     }
 }

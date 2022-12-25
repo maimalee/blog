@@ -23,7 +23,7 @@
                         <td>{{$c->name}}</td>
                         <td><a href="{{Route('comment.all', $c['id'])}}" style="text-decoration: none">{{$c->comment_content}}</a></td>
                         <td>
-                            <a href="" class="btn btn-primary btn-sm">
+                            <a href="{{Route('comment.edit', $c['id'])}}" class="btn btn-primary btn-sm">
                                 <i class="fa fa-edit"></i>
                                 Edit
                             </a>

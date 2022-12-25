@@ -4,23 +4,74 @@
         <di class="card col-lg-6">
             <div class="card-header text-uppercase">Edit Blog</div>
             <div class="card-body">
-                <form action="" class="" method="post">
+                <form action="" method="post">
                     @csrf
                     {{$errors}}
-
-                    <div class="form-group">
-                        <label for="blog_title" class="mt-2">Title</label>
-                        <input type="text" class="form-control" id="blog_title" name="blog_title" value="{{old('blog_title', $blog['blog_title'] )}}">
-                    </div>
-                    <textarea name="blog_content" id="blog_content" cols="30" rows="10"
-                              class="form-control mt-3" >{{value(old('blog_content', $blog['blog_content']))}}</textarea>
-                    <div class="text-end">
-                        <button class="btn btn-primary mt-3">
-                            <i class="fa fa-refresh"></i>Update
-                        </button>
-                    </div>
+                    <table>
+                        <tr>
+                            <td>
+                                 <textarea name="blog_content" id="blog_content" cols="30" rows="10"
+                                          class="form-control mt-3">{{value(old('blog_content', $blog['blog_content']))}}</textarea>
+                                <div class="text-end">
+                                    <input type="hidden" value="{{value(old('blog_id', $blog['id']))}}" class="btn btn-primary blogEdit">
+                                    <button class="btn btn-primary mt-3 blogEditBtn">
+                                        <i class="fa fa-refresh"></i>Update
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                 </form>
             </div>
         </di>
     </div>
+@endsection
+@section('script')
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.blogEditBtn').click(function (e){
+                e.preventDefault();
+                const $blogId = $(this).closest("tr").find('.blogEdit').val();
+                // alert($blogId);
+                swal({
+                    title: "Are you sure?",
+                    text: "You can also edit it if you like",
+                    icon: "success",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            const $data ={
+                                "_token": $('input[name=_token]').val(),
+                                "id": $blogId,
+                            }
+                            $.ajax({
+                                url: '{{Route('blog.edit', $blog['id'])}}',
+                                // type:'POST',
+                                data: $data,
+
+                                success: function (response) {
+                                    swal('You successfully edited your blog', {
+                                        icon: "success",
+                                    })
+                                        .then((willDelete) => {
+                                            location.href = '{{Route('blogs.index')}}'
+                                        });
+                                },
+                                error: function (response) {
+                                    swal("ops unable to edit the blog", {
+                                        icon: "error",
+                                    })
+                                        .then((willDelete) => {
+                                            location.reload()
+                                        });
+                                }
+                            })
+                        }
+                    });
+            })
+        });
+
+    </script>
 @endsection

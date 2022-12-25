@@ -1,3 +1,9 @@
+@php
+    $showFooter ??= false;
+    $showTopBar ??= false;
+    $showSideBar ??= false;
+@endphp
+
 @extends('layouts.app')
 
 @section('content')

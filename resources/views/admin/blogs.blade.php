@@ -19,7 +19,7 @@
                             <tr>
                                 <td>{{$blog->id}}</td>
                                 <td><a href="{{Route('blog.show', $blog['id'])}}"
-                                       style="text-decoration: none">{{$blog->blog_title}}</a></td>
+                                       style="text-decoration: none">{{$blog->blog_content}}</a></td>
                                 <td>{{$blog->name}}</td>
                                 <td>{{$blog->userId}}</td>
                             </tr>

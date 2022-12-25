@@ -12,7 +12,15 @@
                         {{$errors}}
 
                         <div class="form-group">
-                            <input type="hidden" value="{{Auth()->user()['id']}}" name="user_id" id="user_id" class="form-control">
+                            <select name="tags[]" id="tags" class="" style="display: none">
+                                @foreach($tags as $tag)
+                                    @foreach($tag as $t)
+                                        <option type="hidden" value="{{$t}}" class="" style="display: none"></option>
+                                    @endforeach
+                                @endforeach
+                            </select>
+                            <input type="hidden" value="{{Auth()->user()['id']}}" name="user_id" id="user_id" class="">
+                            <input type="hidden" value="{{$blogs->user_id}}" name="blogOwner" id="blogOwner" class="form-control">
                         </div>
                          <div class="form-group">
                             <input type="hidden" value="{{$blogs->id}}" name="blog_id" id="blog_id" class="form-control">
@@ -27,7 +35,9 @@
 
                         <div class="text-end mt-2">
                             <button class="btn btn-primary">
-                                <i class="fa fa-plus"></i>Comment</button>
+                                <i class="fa fa-plus"></i>
+                            Post
+                            </button>
                         </div>
                     </form>
                 </div>

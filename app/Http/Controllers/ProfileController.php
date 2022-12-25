@@ -34,7 +34,6 @@ class ProfileController extends Controller
                     ->with('message' , 'Error Adding The Image');
             }
         }
-
         return view('profile.image');
    }
 }
