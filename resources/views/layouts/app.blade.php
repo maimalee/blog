@@ -244,7 +244,13 @@
                             @endif
                         </a>
 
-
+                        <form action="{{Route('logout')}}" method="post">
+                            @csrf
+                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400 m-lg-2"></i>
+                                Logout
+                            </button>
+                        </form>
                     </div>
                 </nav>
             </div>
@@ -273,17 +279,17 @@
                         <div class="nav-item dropdown">
                             @if(Auth::check() && Auth()->user()->profile)
                                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"></a>
-                                    <img class="rounded-circle me-lg-2" src="/images/{{Auth()->user()['profile']}}"
+                                <img class="rounded-circle me-lg-2" src="/images/{{Auth()->user()['profile']}}"
+                                     alt=""
+                                     style="width: 40px; height: 40px;">
+                            @else
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                    <img class="rounded-circle me-lg-2" src="/images/th.webp"
                                          alt=""
                                          style="width: 40px; height: 40px;">
-                                    @else
-                                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                            <img class="rounded-circle me-lg-2" src="/images/th.webp"
-                                                 alt=""
-                                                 style="width: 40px; height: 40px;">
-                                            @endif
-                                            <span class="d-none d-lg-inline-flex">{{Auth()->user()->name}}</span>
-                                        </a>
+                                    @endif
+                                    <span class="d-none d-lg-inline-flex">{{Auth()->user()->name}}</span>
+                                </a>
 
                         </div>
                     </div>
@@ -357,7 +363,20 @@
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+@auth
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'Authorization': `Bearer {{\auth()->user()['api_token']}}`
+            }
+        });
+        $.get('/api/test')
+    </script>
+@endauth
+
 @yield('script')
+
 </body>
 
 </html>

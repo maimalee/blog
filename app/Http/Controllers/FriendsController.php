@@ -6,12 +6,14 @@ use App\Models\Blog;
 use App\Models\Friend;
 use App\Models\Notification;
 use App\Models\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use function Symfony\Component\String\b;
-
+use Illuminate\Support\Facades\Log;
 
 class FriendsController extends Controller
 {
@@ -23,39 +25,28 @@ class FriendsController extends Controller
             ->join('users', 'users.id', 'friends.friend_id')
             ->where('friends.status', 'accepted')
             ->get();
-//dd($onlyFriends);
-//        $users = User::query()
-//            ->select(['users.*', 'friends.status as status', 'friends.user_id as userID'])
-//            ->leftJoin('friends', 'friends.friend_id', 'users.id')
-//            ->where('friends.status', '!=', 'accepted')
-//            ->where('users.id', '!=', Auth()->user()['id'])
-//            ->get();
 
         $users = User::query()
             ->select(['users.*'])
-//            ->leftJoin('friends', 'friends.friend_id', 'users.id')
             ->where('users.id', '!=', Auth()->user()['id'])
+            ->where('users.role', '!=', 'admin')
             ->get();
 
         $totalUsers = $users->count();
-//            dd($totalUsers);
         $friends = Friend::query()
-            ->select(['friends.*', 'users.name as name', 'users.profile as profile' . 'users.id as userID'])
+            ->select(['friends.*', 'users.name as name', 'users.profile as profile', 'users.id as userID'])
             ->join('users', 'users.id', 'friends.user_id')
             ->where('friends.status', 'pending')
             ->where('friend_id', Auth()->user()['id'])
             ->get();
         $totalRequest = $friends->count();
-//        dd($totalRequest);
-//dd($friends);
-        // dd($friends);
-//        $authUserId = Auth::user()['id'];
+
         $requests = Friend::query()
             ->select(['friends.*',])
             ->where('status', 'pending')
             ->where('user_id', Auth()->user()['id'])
             ->get();
-//        dd($requests);
+
         return view('friends.index', [
             'friends' => $friends,
             'users' => $users,
@@ -64,10 +55,8 @@ class FriendsController extends Controller
             'totalRequest' => $totalRequest,
             'totalUsers' => $totalUsers,
              ]);
-
     }
-
-    public function profile(Request $request)
+    public function profile(Request $request): Factory|View|Application
     {
         $user = Friend::query()
             ->select(['friends.*', 'users.profile as profile', 'users.name as name', 'users.id as uId'])
@@ -88,25 +77,21 @@ class FriendsController extends Controller
         return view('friends.profile', [
             'friend' => $user,
             'blogs' => $blog,
-//            'total_friends' => $friends,
         ]);
     }
-
-    public function add($id)
+    public function add($id): RedirectResponse
     {
         $equal = Friend::query()
             ->select(['friends.*'])
             ->where('friend_id', $id)
             ->where('user_id', Auth()->user()['id'])
             ->first();
-        //  dd($equal);
         if ($equal == null) {
             Friend::query()->create([
                 'user_id' => Auth()->user()['id'],
                 'friend_id' => $id,
                 'status' => 'pending',
             ]);
-
             $userName = Auth::user()['name'];
             Notification::query()->create([
                 'receiver_id' => $id,
@@ -118,51 +103,35 @@ class FriendsController extends Controller
         }
         return back()
             ->with('message', 'You have already sent a request');
-
     }
-
-    public function accept(Request $request)
+    public function acceptApi(int $id): RedirectResponse
     {
-        //dd($request->post());
-        $data = $request->validate([
-            'status' => 'required',
-            'user_id' => 'required',
-            'friend_id' => 'required',
-        ]);
-
+        $user_id = Auth::user()['id'];
         $friend = Friend::query()
-            ->select(['friends.*', 'user_id'])
-            ->join('users', 'users.id', 'friends.user_id')
-            ->where('user_id', $data['user_id'])
-            ->where('friend_id', $data['friend_id'])
+            ->where('user_id', $id)
+            ->where('friend_id', $user_id)
+            ->where('status', 'pending')
             ->first();
-
-        $friend->update(['status' => $data['status']]);
+        Log::debug($friend);
+        $friend->update(['status' => 'accepted']);
         $name = Auth::user()['name'];
         Notification::query()->create([
-            'receiver_id' => $data['user_id'],
+            'receiver_id' => $id,
             'content' => $name . ' accepted your friend request',
             'url' => '/friends',
             'status' => 'pending',
         ]);
-        return redirect()->route('friends.index');
+        return redirect()->back();
     }
 
-    public function reject(Request $request)
+    public function rejectApi(int $id): RedirectResponse
     {
-        $data = $request->validate([
-            'status' => 'required|min:1',
-            'user_id' => 'required',
-            'friend_id' => 'required',
-        ]);
+        $user_id = Auth::user()['id'];
         $friend = Friend::query()
-            ->select(['friends.*'])
-            ->where('user_id', $data['user_id'])
-            ->where('friend_id', $data['friend_id'])
+            ->where('user_id', $id)
+            ->where('friend_id', $user_id)
             ->first();
-//        dd($friend);
-        $friend->update(['status' => $data['status']]);
-//        dd($data);
+        $friend->update(['status' =>'rejected']);
         return redirect()->back();
     }
 }

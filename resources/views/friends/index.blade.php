@@ -39,171 +39,161 @@
                     {{--                    <br>--}}
 
                 @else
-                    @if($f->profile == null)
-                        <table>
-                            <tr>
-                                <td class="mt-2">
-                                    <img class="rounded-circle" src="/images/th.webp" alt=""
+                        <div class="row">
+                            @if($f->profile == null)
+                            <div class="col-md-3 mt-2">
+                                <img class="rounded-circle" src="/images/th.webp" alt=""
+                                     style="width: 50px; height: 50px;">
+
+                                    <a href="{{Route('friend.profile', $f->friend_id)}}" style="text-decoration: none"
+                                       class="">{{$f->name}}</a>
+                            </div>
+                            @else
+                                <div class="col-md-3 mt-2">
+                                    <img class="rounded-circle" src="/images/{{$f->profile}}" alt=""
                                          style="width: 50px; height: 50px;">
 
-                                </td>
-                                <td style="font-size: 1.5em">
-                                    <a href="{{Route('friend.profile', $f->friend_id)}}" style="text-decoration: none"
-                                       class="">{{$f->name}}</a>
+                                        <a href="{{Route('friend.profile', $f->friend_id)}}" style="text-decoration: none; margin-left: 13px;"
+                                           class="">{{$f->name}}</a>
 
-                                </td>
-                                <td>
-                                    <form action="{{Route('friend.accept', $f->friend_id)}}" method="post">
-                                        @csrf
-                                        {{$errors}}
-                                        <div class="form-group">
-                                            <input type="hidden" class="form-control" id="status" name="status"
-                                                   value="accepted">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="hidden" class="form-control" id="friend_id" name="friend_id"
-                                                   value="{{$f->friend_id}}">
-                                        </div>
-                                        <div class="form-group">
+                                </div>
+                            @endif
+                            <div class="col-md-1 mt-3">
+                                <form action="" method="">
+                                    @csrf
 
-                                            <input type="hidden" class="form-control" id="user_id" name="user_id"
-                                                   value="{{$f->user_id}}">
-                                        </div>
-                                        <br>
-                                        <button class="btn btn-primary btn-sm">Confirm</button>
-                                    </form>
+                                    <button class="btn btn-primary btn-sm btn-accept" data-accept-id="{{$f->user_id}}" >Confirm</button>
+                                </form>
+                            </div>
 
+                            <div class="col-md-1 mt-3">
+                                <form action="" method="GET">
+                                    @csrf
+                                     <button class="btn btn-danger btn-sm btn-reject" data-reject-id="{{$f->user_id}}">
+                                        Delete
+                                    </button>
 
-                                    <form action="{{Route('friend.reject', $f->friend_id)}}" method="post">
-                                        @csrf
-                                        {{$errors}}
-                                        <div class="form-group">
-                                            <input type="hidden" class="form-control" id="status" name="status"
-                                                   value="rejected">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="hidden" class="form-control" id="friend_id"
-                                                   name="friend_id"
-                                                   value="{{$f->friend_id}}">
-                                        </div>
-                                        <div class="form-group">
-
-                                            <input type="hidden" class="form-control" id="user_id" name="user_id"
-                                                   value="{{$f->user_id}}">
-                                        </div>
-                                        <br>
-
-                                        <button class="btn btn-danger btn-sm">
-                                            Delete
-                                        </button>
-
-                                    </form>
-
-                                </td>
-                            </tr>
-                        </table>
-
-                    @else
-                        <table>
-                            <tr>
-                                <td>
-                                    <img class="rounded-circle" src="/images/{{$f->profile}}" alt=""
-                                         style="width: 50px; height: 50px;"> <a href="" style="text-decoration: none"
-                                                                                class="">{{$f->name}}</a>
-                                </td>
-                                <td style="font-size: 1.5em">
-                                    <a href="{{Route('friend.profile', $f->friend_id)}}" style="text-decoration: none"
-                                       class="">{{$f->name}}</a>
-                                </td>
-                                <td>
-                                    <form action="{{Route('friend.accept', $f->friend_id)}}" method="post">
-                                        @csrf
-                                        {{$errors}}
-                                        <div class="form-group">
-                                            <input type="hidden" class="form-control" id="status" name="status"
-                                                   value="rejected">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="hidden" class="form-control" id="friend_id" name="friend_id"
-                                                   value="{{$f->friend_id}}">
-                                        </div>
-                                        <div class="form-group">
-
-                                            <input type="hidden" class="form-control" id="user_id" name="user_id"
-                                                   value="{{$f->userID}}">
-                                        </div>
-                                        <br>
-                                        <button class="btn btn-primary btn-sm">Confirm</button>
-                                    </form>
-
-
-                                    <form action="{{Route('friend.reject', $f->friend_id)}}" method="post">
-                                        <div class="form-group">
-                                            <input type="hidden" class="form-control" id="status" name="status"
-                                                   value="accepted">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="hidden" class="form-control" id="friend_id"
-                                                   name="friend_id"
-                                                   value="{{$f->friend_id}}">
-                                        </div>
-                                        <div class="form-group">
-
-                                            <input type="hidden" class="form-control" id="user_id" name="user_id"
-                                                   value="{{$f->userID}}">
-                                        </div>
-                                        <br>
-
-                                        <button class="btn btn-danger btn-sm">
-                                            Delete
-                                        </button>
-
-                                    </form>
-
-                                </td>
-                            </tr>
-                        </table>
+                                </form>
+                            </div>
+                        </div>
                     @endif
-                @endif
-            @endforeach
-        @else
-            <p>No friend request</p>
-        @endif
-
+                    @endforeach
+                    @else
+                        <p>No friend request</p>
+                    @endif
+                    <div class="card col-md-8 mt-2">
+                        <div class="card-header text-uppercase">Friends Suggestion</div>
+                        <div class="card-body">
+                            <table class="table">
+                                <tbody>
+                                @foreach($users as $user)
+                                    <tr>
+                                        @if($user->status === 'pending' && $user->userID === Auth()->user()['id']  )
+                                            <td><a href="" style="text-decoration: none">{{$user->name}}</a></td>
+                                            <td><span class="badge bg-info"><i>Request sent</i></span></td>
+                                        @else
+                                            <td><a href="" style="text-decoration: none">
+                                                    {{$user->id}}
+                                                    {{$user->name}}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="{{Route('friend.add', $user->id)}}"
+                                                   class="btn btn-sm btn-primary">
+                                                    Add friend
+                                                </a>
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        {{--        <div class="p-2">--}}
+                        {{--            {{$users->links('pagination::bootstrap-5')}}--}}
+                        {{--        </div>--}}
+                    </div>
     </div>
+@endsection
+@section('script')
+    <script>
+        $(document).ready(function () {
+            $('.btn-accept').click(function (e){
+                e.preventDefault();
+                const button = e.currentTarget;
+                const $acceptId = button.dataset.acceptId;
+                alert($acceptId);
 
-    <div class="card col-md-8 mt-2">
-        <div class="card-header text-uppercase">Friends Suggestion</div>
-        <div class="card-body">
-            <table class="table">
-                <tbody>
-                @foreach($users as $user)
-                    <tr>
-                        @if($user->status === 'pending' && $user->userID === Auth()->user()['id']  )
-                            <td><a href="" style="text-decoration: none">{{$user->name}}</a></td>
-                            <td><span class="badge bg-info"><i>Request sent</i></span></td>
-                        @else
-                            <td><a href="" style="text-decoration: none">
-                                    {{$user->id}}
-                                    {{$user->name}}
-                                </a>
-                            </td>
-                            <td>
-                                <a href="{{Route('friend.add', $user->id)}}" class="btn btn-sm btn-primary">
-                                    Add friend
-                                </a>
-                            </td>
-                        @endif
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-        {{--        <div class="p-2">--}}
-        {{--            {{$users->links('pagination::bootstrap-5')}}--}}
-        {{--        </div>--}}
-    </div>
+                swal({
+                    title: "Are you sure?",
+                    text: "You can also edit it if you like",
+                    icon: "success",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            $.ajax({
+                                url: `/api/friend/${$acceptId}/accept`,
+                                method:'POST',
+                                success: function (response) {
+                                    swal('You successfully edited your blog', {
+                                        icon: "success",
+                                    })
+                                        .then((willDelete) => {
+                                            location.href = '{{Route('blogs.index')}}'
+                                        });
+                                },
+                                error: function (response) {
+                                    swal("ops unable to edit the blog", {
+                                        icon: "error",
+                                    })
+                                        .then((willDelete) => {
+                                            location.reload()
+                                        });
+                                }
+                            })
+                        }
+                    });
+            });
+            $('.btn-reject').click(function (e){
+                e.preventDefault();
+                const button = e.currentTarget;
+                const $rejectId =button.dataset.rejectId;
+                alert($rejectId);
 
-    </div>
-
+                swal({
+                    title: "Are you sure?",
+                    text: "You can also edit it if you like",
+                    icon: "success",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            $.ajax({
+                                url: `/api/friend/${$rejectId}/delete`,
+                                method:'GET',
+                                success: function (response) {
+                                    swal('You successfully edited your blog', {
+                                        icon: "success",
+                                    })
+                                        .then((willDelete) => {
+                                            location.href = '{{Route('blogs.index')}}'
+                                        });
+                                },
+                                error: function (response) {
+                                    swal("ops unable to edit the blog", {
+                                        icon: "error",
+                                    })
+                                        .then((willDelete) => {
+                                            location.reload()
+                                        });
+                                }
+                            })
+                        }
+                    });
+            });
+        });
+    </script>
 @endsection

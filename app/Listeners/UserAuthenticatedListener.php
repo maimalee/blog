@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\Friend;
 use App\Models\Notification;
 use App\Models\User;
+use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -26,10 +27,10 @@ class UserAuthenticatedListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param Authenticated $event
      * @return void
      */
-    public function handle($event)
+    public function handle(Authenticated $event): void
     {
         $notifications = Notification::query()
             ->where('receiver_id', $event->user['id'])
@@ -80,7 +81,6 @@ class UserAuthenticatedListener
             'users' => $users,
             'comments' => $comment,
             'blogs' => $blogs,
-
         ]);
     }
 }

@@ -14,7 +14,7 @@
                                           class="form-control mt-3">{{value(old('blog_content', $blog['blog_content']))}}</textarea>
                                 <div class="text-end">
                                     <input type="hidden" value="{{value(old('blog_id', $blog['id']))}}" class="btn btn-primary blogEdit">
-                                    <button class="btn btn-primary mt-3 blogEditBtn">
+                                    <button class="btn btn-primary mt-3 blogEditBtn" data-blog-id="{{$blog['id']}}">
                                         <i class="fa fa-refresh"></i>Update
                                     </button>
                                 </div>
@@ -27,51 +27,46 @@
     </div>
 @endsection
 @section('script')
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $('.blogEditBtn').click(function (e){
-                e.preventDefault();
-                const $blogId = $(this).closest("tr").find('.blogEdit').val();
-                // alert($blogId);
-                swal({
-                    title: "Are you sure?",
-                    text: "You can also edit it if you like",
-                    icon: "success",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                    .then((willDelete) => {
-                        if (willDelete) {
-                            const $data ={
-                                "_token": $('input[name=_token]').val(),
-                                "id": $blogId,
-                            }
-                            $.ajax({
-                                url: '{{Route('blog.edit', $blog['id'])}}',
-                                // type:'POST',
-                                data: $data,
-
-                                success: function (response) {
-                                    swal('You successfully edited your blog', {
-                                        icon: "success",
-                                    })
-                                        .then((willDelete) => {
-                                            location.href = '{{Route('blogs.index')}}'
-                                        });
-                                },
-                                error: function (response) {
-                                    swal("ops unable to edit the blog", {
-                                        icon: "error",
-                                    })
-                                        .then((willDelete) => {
-                                            location.reload()
-                                        });
-                                }
-                            })
-                        }
-                    });
-            })
-        });
+{{--    <script type="text/javascript">--}}
+{{--        $(document).ready(function(){--}}
+{{--            $('.blogEditBtn').click(function (e){--}}
+{{--                e.preventDefault();--}}
+{{--                const button = e.currentTarget;--}}
+{{--                const $blogId = button.dataset.blogId;--}}
+{{--                 alert($blogId);--}}
+{{--                swal({--}}
+{{--                    title: "Are you sure?",--}}
+{{--                    text: "You can also edit it if you like",--}}
+{{--                    icon: "success",--}}
+{{--                    buttons: true,--}}
+{{--                    dangerMode: true,--}}
+{{--                })--}}
+{{--                    .then((willDelete) => {--}}
+{{--                        if (willDelete) {--}}
+{{--                            $.ajax({--}}
+{{--                                url: `/api/blogs/${$blogId}/edit`,--}}
+{{--                                method:'POST',--}}
+{{--                                success: function (response) {--}}
+{{--                                    swal('You successfully edited your blog', {--}}
+{{--                                        icon: "success",--}}
+{{--                                    })--}}
+{{--                                        .then((willDelete) => {--}}
+{{--                                            location.href = '{{Route('blogs.index')}}'--}}
+{{--                                        });--}}
+{{--                                },--}}
+{{--                                error: function (response) {--}}
+{{--                                    swal("ops unable to edit the blog", {--}}
+{{--                                        icon: "error",--}}
+{{--                                    })--}}
+{{--                                        .then((willDelete) => {--}}
+{{--                                            location.reload()--}}
+{{--                                        });--}}
+{{--                                }--}}
+{{--                            })--}}
+{{--                        }--}}
+{{--                    });--}}
+{{--            })--}}
+{{--        });--}}
 
     </script>
 @endsection

@@ -43,7 +43,7 @@ Route::prefix('/blogs')->middleware('auth')->group(function () {
     Route::match(['get','post'],'/all', [BlogController::class, 'allBlogs'])->name('allBlogs');
     Route::match(['get', 'post'], '/{id}', [BlogController::class, 'show'])->name('blog.show');
     Route::match(['get', 'post'], '/{id}/show', [BlogController::class, 'allBlogsShow'])->name('allblog.show');
-    Route::match(['get', 'post'], '{id}/edit', [BlogController::class, 'edit'])->name('blog.edit');
+    Route::match(['get', 'post'], '{id}/edit', [BlogController::class, 'editApi'])->name('blog.edit');
     Route::get('{id}/delete', [BlogController::class, 'destroy'])->name('blog.delete');
 });
 
@@ -73,7 +73,7 @@ Route::prefix('friends')->middleware('auth')->group(function () {
     Route::get('{id}/show', [FriendsController::class,'profile'])->name('friend.profile');
     Route::get('{id}/add', [FriendsController::class, 'add'])->name('friend.add');
     Route::post('{id}/accept', [FriendsController::class, 'accept'])->name('friend.accept');
-    Route::post('{id}/reject', [FriendsController::class, 'reject'])->name('friend.reject');
+//    Route::post('{id}/reject', [FriendsController::class, 'reject'])->name('friend.reject');
 
 });
 

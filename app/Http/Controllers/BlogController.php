@@ -7,20 +7,17 @@ use App\Models\Comment;
 use App\Models\Friend;
 use App\Models\Like;
 use App\Models\LikeComment;
-use App\Models\LikeReply;
 use App\Models\Notification;
 use App\Models\Reply;
 use App\Models\Tag;
+use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class BlogController extends Controller
@@ -55,14 +52,6 @@ class BlogController extends Controller
                 ]);
             }
 
-
-//                $images = new Image();
-//                $images->image = json_encode($data);
-//                $images->save();
-//               dd($data['tags']);
-
-//           dd($blog['id']);
-
             $tagData = [];
             foreach ($data['tags'] ?? [] as $tags) {
                 $tagData[] = [
@@ -80,9 +69,9 @@ class BlogController extends Controller
                 ->join('blogs', 'blogs.id', 'tags.blog_id')
                 ->where('tags.blog_id', $blog['id'])
                 ->get();
-//            dd($tag);
+
             $totalTag = $tag->count();
-//            dd($totalTag);
+
             $name = Auth::user()['name'];
             $taggedUser = [];
             if ($totalTag > 0) {
@@ -103,10 +92,8 @@ class BlogController extends Controller
                     ->where('friends.user_id', Auth::user()['id'])
                     ->where('friends.status', 'accepted')
                     ->get();
-//            dd($friends);
-                $name = Auth::user()['name'];
 
-//
+                $name = Auth::user()['name'];
 
                 if (!empty($friends)) {
                     foreach ($friends as $f) {
@@ -123,52 +110,33 @@ class BlogController extends Controller
             return redirect()->route('blogs.index');
         }
 
-//        if (Auth::user()?->name != 'Anas Maimalee'){
-//            abort(Response::HTTP_FORBIDDEN);
-//        }
         $friends = Friend::query()
             ->select(['friends.*', 'users.name as name', 'users.id as userId'])
             ->join('users', 'users.id', 'friends.friend_id')
             ->where('user_id', Auth::user()['id'])
             ->where('friends.status', 'accepted')
             ->get();
-//dd($friends);
+
         return view('blogs.create', [
             'friends' => $friends,
         ]);
 
     }
 
-
     public function index(): Factory|View|Application
     {
         $blogs = Blog::query()->orderByDesc('id')
             ->where('user_id', Auth::user()['id'])
             ->paginate(10);
-        //dd($blogs);
 
         return view('blogs.index', [
             'blogs' => $blogs,
         ]);
-
     }
 
     public function allBlogs(Request $request): Factory|View|Application
     {
-//        $number =[];
-//        for ($x = 1; $x<= 100; $x++){
-//            if ($x % 3 ==0 && $x % 5==0 ){
-//                $number[] = 'FizzBuzz';
-//            }
-//            elseif ($x % 3 == 0){
-//                $number[]= 'Fizz';
-//            }
 //
-//            else{
-//                $number[] = $x;
-//            }
-//        }
-//        dd($number);
         if ($request->isMethod('post')) {
             $tagged = $request->validate([
                 'blog_id' => 'required',
@@ -180,20 +148,22 @@ class BlogController extends Controller
                 ->join('users', 'users.id', 'tags.tagged_friend')
                 ->where('tags.blog_id', $tagged['blog_id'])
                 ->get();
-//            dd($tags);
+
             $data = $request->validate([
                 'blog_id' => 'required',
                 'user_id' => 'required',
                 'blog_owner' => 'required',
-//                'tags.*' => 'int|min:1',
+
             ]);
+
             $like = Like::query()
                 ->where('user_id', Auth::user()['id'])
                 ->where('blog_id', $data['blog_id'])
                 ->first();
-//            dd($like);
+
+
             if (empty($like)) {
-                $blogLike = Like::query()->create([
+               Like::query()->create([
                     'blog_id' => $data['blog_id'],
                     'user_id' => $data['user_id'],
                 ]);
@@ -204,7 +174,7 @@ class BlogController extends Controller
                     'url' => '/blogs/' . $data['blog_id'] . '/show',
                     'status' => 'pending',
                 ]);
-//                dd($blogLike);
+
                 $name = Auth::user()['name'];
                 $taggedUser = [];
                 foreach ($tags['tagged_friend'] ?? [] as $t) {
@@ -215,7 +185,7 @@ class BlogController extends Controller
                             'url' => '/blogs/' . $data['blog_id'] . '/show',
                             'status' => 'pending',
                         ];
-//                        dd($taggedUser);
+
                         Notification::query()->insert($taggedUser);
                     }
                 }
@@ -230,9 +200,8 @@ class BlogController extends Controller
                 $builder->selectRaw('COUNT(likes_id)')
                     ->from('likes')
                     ->whereRaw('likes.blog_id = blogs.id');
-            },'likes')
-//            ->leftJoin('tags','tags.tagged_friend', 'friends.friend_id')
-            ->whereIn('user_id', function (Builder $builder) {
+            }, 'likes')
+             ->whereIn('user_id', function (Builder $builder) {
                 $builder->select('user_id')
                     ->from('friends')
                     ->where('friend_id', Auth::id())
@@ -245,26 +214,16 @@ class BlogController extends Controller
             })
             ->orderByDesc('id')
             ->get();
-
-
-//dd($blogs);
-
         foreach ($blogs as $blog) {
             $decodedImages = json_decode($blog['images'], true) ?? [];
             $decodedImages = array_splice($decodedImages, 0, 4);
             $chunked = array_chunk($decodedImages, 2);
             $blog['image_chunks'] = $chunked;
         }
-
         return view('blogs.allBlogs', [
             'blogs' => $blogs,
-//            'tags' => $tags,
-//            'number' => $number,
         ]);
-
-
     }
-
     public function show(Request $request): Factory|View|Application
     {
         if ($request->isMethod('post')) {
@@ -274,7 +233,7 @@ class BlogController extends Controller
                 'comment_id' => ['required', Rule::exists('comments', 'id')],
                 'reply_content' => 'required',
             ]);
-//            dd($data);
+
             Reply::query()->create([
                 'user_id' => $data['user_id'],
                 'blog_id' => $data['blog_id'],
@@ -293,7 +252,6 @@ class BlogController extends Controller
             ->get();
         $comm = $comment->count();
 
-//         dd($comm);
         return view('blogs.show', compact('blog'), compact('comment', 'comm'));
     }
 
@@ -302,13 +260,22 @@ class BlogController extends Controller
 
         if ($request->isMethod('post')) {
             $data = $request->validate([
-                'user_id' => ['required', Rule::exists('users', 'id')],
-                'blog_id' => ['required', Rule::exists('blogs', 'id')],
-                'comment_id' => ['required', Rule::exists('comments', 'id')],
+                'user_id' => [
+//                    'required|exists:users',
+                     Rule::exists('users', 'id')
+                ],
+
+                'blog_id' => [
+                    'required',
+                     Rule::exists('blogs', 'id')
+                ],
+                'comment_id' => [
+                    'required',
+                     Rule::exists('comments', 'id')
+                ],
                 'reply_content' => 'required',
                 'comment_owner' => 'required',
             ]);
-//            dd($data);
 
             Reply::query()->create([
                 'user_id' => $data['user_id'],
@@ -338,9 +305,6 @@ class BlogController extends Controller
             }
         }
 
-//        dd(Auth::user()['id']);
-
-
         $blog = Blog::query()
             ->select(['blogs.*', 'users.name', 'users.id as userId', 'users.profile as profile'])
             ->join('users', 'users.id', 'blogs.user_id')
@@ -360,34 +324,32 @@ class BlogController extends Controller
                     ->from('like_comments')
                     ->whereRaw('like_comments.comment_id = comments.id');
             }, 'total_likes')
-
             ->join('users', 'users.id', 'comments.user_id')
             ->join('blogs', 'blogs.id', 'comments.blog_id')
             ->where('comments.blog_id', $blog['id'])
             ->get();
 
-//        dd($comment);
         $comm = $comment->count();
-//dd($comm);
+
         $replies = Reply::query()
             ->select(['replies.*', 'users.name', 'users.profile as profile'])
-            ->selectSub(function (Builder $builder){
+            ->selectSub(function (Builder $builder) {
                 $builder->selectRaw('COUNT(id)')
                     ->from('like_replies')
                     ->whereRaw('like_replies.reply_id = replies.id');
-            }, 'total_reply_likes' )
+            }, 'total_reply_likes')
             ->join('users', 'users.id', 'replies.user_id')
             ->join('comments', 'comments.id', 'replies.comment_id')
             ->join('blogs', 'blogs.id', 'replies.blog_id')
             ->where('replies.blog_id', $blog['id'])
             ->get();
-//        dd($replies);
+
         $tags = Tag::query()
             ->select(['tags.*'])
             ->where('tags.blog_id', $request['id'])
             ->get();
-//        dd($tags);
-        $likes = Like::query()
+
+         $likes = Like::query()
             ->where('blog_id', $blog['id'])
             ->count();
 
@@ -396,11 +358,8 @@ class BlogController extends Controller
             ->join('comments', 'comments.id', 'like_comments.comment_id')
             ->where('like_comments.blog_id', $blog['id'])
             ->get();
-//        dd($likesComment);
+
         $likeComment = $likesComment->count();
-//        dd($likeComment);
-//        dd($likes);
-//        $likeComment_id  = $likesComment['comment_id'];
 
         return view('blogs.allBlogShow', [
             'blog' => $blog,
@@ -414,19 +373,17 @@ class BlogController extends Controller
         ]);
     }
 
-    public function edit(Request $request): Factory|View|Application|RedirectResponse
+    public function editApi(int $id, Request $request): Factory|View|Application|RedirectResponse
     {
-        $blog = Blog::query()->find($request['id']);
+        $blog = Blog::query()->find($id);
 
-//        dd($blog);
         if ($request->isMethod('post')) {
-//            dd($request->post());
+            $blog = Blog::query()->find($id);
             $data = $request->validate([
-                     'blog_content' => 'required',
+                'blog_content' => 'required',
             ]);
 
             $blog->update(['blog_content' => $data['blog_content']]);
-//            dd($blog);
             return redirect()->route('blogs.index');
         }
 
@@ -439,11 +396,10 @@ class BlogController extends Controller
         $blog->destroy($id);
         return redirect()->route('blogs.index');
     }
+
     public function logout(): RedirectResponse
     {
         Auth::logout();
         return redirect()->route('home');
     }
-
-
 }
