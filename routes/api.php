@@ -27,11 +27,11 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/blogs/{bid}/comments/{cid}/like', [LikesController::class, 'likeBlogComment']);
     Route::post('/blogs/{bid}/comments/{cid}/replies/{rid}/like', [LikesController::class, 'likeBlogReply']);
 
-    Route::post('users/{id}/recover', [AdminController::class, 'recoverApi']);
-    Route::post('users/{id}/delete', [AdminController::class, 'destroyApi']);
+    Route::post('/users/{id}/recover', [AdminController::class, 'recoverApi']);
+    Route::post('/users/{id}/delete', [AdminController::class, 'destroyApi']);
 
-    Route::post('blogs/{id}/edit', [BlogController::class, 'editApi']);
+    Route::post('/blogs/{id}/edit', [BlogController::class, 'editApi']);
 
-    Route::post('friend/{id}/accept', [FriendsController::class, 'acceptApi']);
+    Route::get('/friend/{id}/accept', [FriendsController::class, 'acceptApi']);
     Route::get('/friend/{id}/delete', [FriendsController::class, 'rejectApi']);
 });

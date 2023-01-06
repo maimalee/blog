@@ -30,6 +30,12 @@ class AdminController extends Controller
         }
         echo 'only admin is allow to access this page';
     }
+    public function destroyApi(int $id): RedirectResponse
+    {
+        $user = User::query()->find($id);
+        $user->update(['deleted_at' => time()]);
+        return redirect()->route('users.all');
+    }
 
     public function recoverApi($id): RedirectResponse
     {
@@ -109,16 +115,6 @@ class AdminController extends Controller
             'totalLike' => $totalLike,
         ]);
     }
-
-    public function destroyApi(int $id): RedirectResponse
-    {
-//        dd($id);
-        $user = User::query()->find($id);
-        $user->update(['deleted_at' => time()]);
-        // dd($user);
-        return redirect()->route('users.all');
-    }
-
     public function editBlogUn(Request $request): Factory|View|Application|RedirectResponse
     {
         $blog = Blog::query()->find($request['id']);
@@ -162,7 +158,7 @@ class AdminController extends Controller
         return redirect()->route('comment.all');
     }
 
-    public function commentEdit(Request $request)
+    public function commentEdit(Request $request): Factory|View|Application|RedirectResponse
     {
         $comment = Comment::query()->find($request['id']);
         if ($request->isMethod('post')) {

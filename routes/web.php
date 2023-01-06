@@ -6,7 +6,6 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FriendsController;
 use App\Http\Controllers\LikesController;
 use App\Http\Controllers\MainController;
-use App\Http\Controllers\NotificationControler;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -72,7 +71,7 @@ Route::prefix('friends')->middleware('auth')->group(function () {
     Route::get('/', [FriendsController::class, 'index'])->name('friends.index');
     Route::get('{id}/show', [FriendsController::class,'profile'])->name('friend.profile');
     Route::get('{id}/add', [FriendsController::class, 'add'])->name('friend.add');
-    Route::post('{id}/accept', [FriendsController::class, 'accept'])->name('friend.accept');
+//    Route::post('{id}/accept', [FriendsController::class, 'accept'])->name('friend.accept');
 //    Route::post('{id}/reject', [FriendsController::class, 'reject'])->name('friend.reject');
 
 });
@@ -84,6 +83,3 @@ Route::prefix('notifications')
         Route::get('/', [NotificationController::class, 'index'])->name('index');
         Route::get('/{id}', [NotificationController::class, 'read'])->name('read');
     });
-
-
-//Route::get('/sms', [SmsController::class, 'index']);
